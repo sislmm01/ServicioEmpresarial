@@ -1,11 +1,13 @@
 const express = require('express')
 const db = require('./database.js');
+const cors = require('cors');
 
 const app = express()
 const port = 3000
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+app.use(cors()); // to allow connections to localhost
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

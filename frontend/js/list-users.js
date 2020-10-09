@@ -14,6 +14,26 @@
     tr.appendChild(createColumn(user.firstname));
     tr.appendChild(createColumn(user.lastname));
     tr.appendChild(createColumn(user.email));
+
+    const tdOptions = document.createElement('td');
+    const deleteButton = document.createElement('button');
+    const url = `http://localhost:3000/delete/${user.id}`;
+    deleteButton.innerHTML = 'eliminar';
+    deleteButton.className = 'btn btn-danger';
+
+    deleteButton.addEventListener('click', () => {
+      fetch(url, {
+        method: 'DELETE',
+      })
+      .then(response => response.json())
+      .then(result => {
+        alert(result.message);
+        location.reload();
+      });
+    });
+
+    tdOptions.appendChild(deleteButton);
+    tr.appendChild(tdOptions);
   
     return tr;
   };

@@ -8,13 +8,20 @@
 </head>
 <body>
   <div class="container">
-    <h4>New User</h4>
-    <form method="POST" action="http://localhost:3000/new">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <strong class="alert__text"></strong>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <h4>User form</h4>
+    <form id="userForm">
       <div class="form-group">
         <label for="username">Username</label>
         <input type="text" class="form-control" id="username" name="username">
       </div>
-      <div class="form-group">
+      <div class="form-group" id="password-container">
         <label for="password">Password</label>
         <input type="password" class="form-control" id="password" name="password">
       </div>
@@ -33,5 +40,57 @@
       <button class="btn btn-primary" type="submit">Submit</button>
     </form>
   </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    let method;
+    let url;
+
+    if (id) {
+      method = 'PUT';
+      url = `http://localhost:3000/edit/${id}`;
+
+      document.querySelector('#password-container').style.display = 'none';
+      fetch(`http://localhost:3000/user/${id}`)
+      .then(response => response.json())
+      .then(({message, user}) => {
+        if (user) {
+          ['username', 'firstname', 'lastname', 'email'].forEach(field => {
+            const el = document.querySelector(`#${field}`);
+            el.value = user[field];
+          });
+        }
+      });
+    } else {
+      method = 'POST';
+      url = 'http://localhost:3000/new';
+    }
+
+    const messageContainer = document.querySelector('.alert');
+    const messageText = document.querySelector('.alert__text');
+    const close = document.querySelector('.close');
+    
+    messageContainer.style.display = 'none';
+    close.addEventListener('click', () => {
+      messageContainer.style.display = 'none';
+    });
+
+    userForm.onsubmit = (e) => {
+      e.preventDefault();
+      fetch(url,
+        {
+          method,
+          body: new FormData(userForm),
+        }
+      )
+      .then(response => response.json())
+      .then(result => {
+        messageText.innerHTML = result.message;
+        messageContainer.style.display = 'block';
+      });
+    };
+    
+  </script>
 </body>
 </html>
